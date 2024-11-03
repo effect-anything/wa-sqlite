@@ -31,7 +31,6 @@
     }
   }
 })()
-
 ;(function () {
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor
   let pAsyncFlags = 0
