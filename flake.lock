@@ -16,9 +16,26 @@
         "type": "github"
       }
     },
+    "nixpkgs-emcc": {
+      "locked": {
+        "lastModified": 1727019693,
+        "narHash": "sha256-iGoo4GF8DJhk6ybDR32fPigr3sa2OnpQgKVbz/JckZQ=",
+        "owner": "willcohen",
+        "repo": "nixpkgs",
+        "rev": "378f60cc7bedc73eb748e9c73b3138d14b3ce6c7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "willcohen",
+        "ref": "emscripten-3.1.67",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-emcc": "nixpkgs-emcc"
       }
     }
   },

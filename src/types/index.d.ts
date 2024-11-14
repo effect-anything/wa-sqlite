@@ -37,11 +37,11 @@ declare interface SQLiteVFS {
   /** Maximum length of a file path in UTF-8 bytes (default 64) */
   mxPathName?: number;
 
-  close(): void|Promise<void>;
-  isReady(): boolean|Promise<boolean>;
+  close(): void
+  isReady(): boolean
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
-  xClose(fileId: number): number|Promise<number>;
+  xClose(fileId: number): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
   xRead(
@@ -50,7 +50,7 @@ declare interface SQLiteVFS {
     iAmt: number,
     iOffsetLo: number,
     iOffsetHi: number
-  ): number|Promise<number>;
+  ): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
   xWrite(
@@ -59,41 +59,41 @@ declare interface SQLiteVFS {
     iAmt: number,
     iOffsetLo: number,
     iOffsetHi: number
-  ): number|Promise<number>;
+  ): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
-  xTruncate(fileId: number, iSizeLo: number, iSizeHi): number|Promise<number>;
+  xTruncate(fileId: number, iSizeLo: number, iSizeHi): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
-  xSync(fileId: number, flags: number): number|Promise<number>;
+  xSync(fileId: number, flags: number): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
   xFileSize(
     fileId: number,
     pSize64: number
-  ): number|Promise<number>;
+  ): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
-  xLock(fileId: number, flags: number): number|Promise<number>;
+  xLock(fileId: number, flags: number): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
-  xUnlock(fileId: number, flags: number): number|Promise<number>;
+  xUnlock(fileId: number, flags: number): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
   xCheckReservedLock(
     fileId: number,
     pResOut: number
-  ): number|Promise<number>;
+  ): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
   xFileControl(
     fileId: number,
     flags: number,
     pOut: number
-  ): number|Promise<number>;
+  ): number
 
   /** @see https://sqlite.org/c3ref/io_methods.html */
-  xDeviceCharacteristics(fileId: number): number|Promise<number>;
+  xDeviceCharacteristics(fileId: number): number
 
   /** @see https://sqlite.org/c3ref/vfs.html */
   xOpen(
@@ -102,10 +102,10 @@ declare interface SQLiteVFS {
     pFile: number,
     flags: number,
     pOutFlags: number
-  ): number|Promise<number>;
+  ): number
 
   /** @see https://sqlite.org/c3ref/vfs.html */
-  xDelete(pVfs: number, zName: number, syncDir: number): number|Promise<number>;
+  xDelete(pVfs: number, zName: number, syncDir: number): number
 
   /** @see https://sqlite.org/c3ref/vfs.html */
   xAccess(
@@ -113,7 +113,7 @@ declare interface SQLiteVFS {
     zName: number,
     flags: number,
     pResOut: number
-  ): number|Promise<number>;
+  ): number
 }
 
 /**
@@ -344,7 +344,7 @@ declare interface SQLiteAPI {
    * @param db database pointer
    * @returns `SQLITE_OK` (throws exception on error)
    */
-  close(db): Promise<number>;
+  close(db): number;
 
   /**
    * Call the appropriate `column_*` function based on the column type
@@ -495,9 +495,9 @@ declare interface SQLiteAPI {
     nArg: number,
     eTextRep: number,
     pApp: number,
-    xFunc?: (context: number, values: Uint32Array) => void|Promise<void>,
-    xStep?: (context: number, values: Uint32Array) => void|Promise<void>,
-    xFinal?: (context: number) => void|Promise<void>): number;
+    xFunc?: (context: number, values: Uint32Array) => void
+    xStep?: (context: number, values: Uint32Array) => void
+    xFinal?: (context: number) => void): number;
 
   /**
    * Get number of columns in current row of a prepared statement
@@ -523,7 +523,7 @@ declare interface SQLiteAPI {
     db: number,
     zSQL: string,
     callback?: (row: Array<SQLiteCompatibleType|null>, columns: string[]) => void
-  ): Promise<number>;
+  ): Array<Array<any>>
 
   /**
    * Destroy a prepared statement object compiled by {@link statements}
@@ -534,7 +534,7 @@ declare interface SQLiteAPI {
    * @param stmt prepared statement pointer
    * @returns Promise resolving to `SQLITE_OK` or error status
    */
-  finalize(stmt: number): Promise<number>;
+  finalize(stmt: number): number;
 
   /**
    * Test for autocommit mode
@@ -587,7 +587,7 @@ declare interface SQLiteAPI {
     zFilename: string,
     iFlags?: number,
     zVfs?: string    
-  ): Promise<number>;
+  ): number;
 
   /**
    * Specify callback to be invoked between long-running queries
@@ -601,7 +601,7 @@ declare interface SQLiteAPI {
    * @param handler 
    * @param userData 
    */
-  progress_handler(db: number, nProgressOps: number, handler: (userData: any) => number|Promise<number>, userData);
+  progress_handler(db: number, nProgressOps: number, handler: (userData: any) => number, userData);
 
   /**
    * Reset a prepared statement object
@@ -609,7 +609,7 @@ declare interface SQLiteAPI {
    * @param stmt prepared statement pointer
    * @returns Promise-wrapped `SQLITE_OK` (rejects on error)
    */
-  reset(stmt: number): Promise<number>;
+  reset(stmt: number): number;
 
   /**
    * Convenience function to call `result_*` based of the type of `value`
@@ -686,7 +686,7 @@ declare interface SQLiteAPI {
    */
   set_authorizer(
     db: number,
-    authFunction: (userData: any, iActionCode: number, param3: string|null, param4: string|null, param5: string|null, param6: string|null) => number|Promise<number>,
+    authFunction: (userData: any, iActionCode: number, param3: string|null, param4: string|null, param5: string|null, param6: string|null) => number,
     userData: any): number;
   
   /**
@@ -735,7 +735,7 @@ declare interface SQLiteAPI {
    * @param sql 
    * @param options
    */
-  statements(db: number, sql: string, options?: SQLitePrepareOptions): AsyncIterable<number>;
+  statements(db: number, sql: string, options?: SQLitePrepareOptions): Iterable<number>;
 
   /**
    * Evaluate an SQL statement
@@ -744,7 +744,7 @@ declare interface SQLiteAPI {
    * @returns Promise resolving to `SQLITE_ROW` or `SQLITE_DONE`
    * (rejects on error)
    */
-  step(stmt: number): Promise<number>;
+  step(stmt: number): number;
 
    /**
    * Register an update hook
@@ -1126,7 +1126,7 @@ declare module 'wa-sqlite/src/VFS.js' {
     mxPathName: number;
     /**
      * @param {number} fileId
-     * @returns {number|Promise<number>}
+     * @returns {number}
      */
     xClose(fileId: number): number;
     /**
@@ -1164,7 +1164,7 @@ declare module 'wa-sqlite/src/VFS.js' {
     /**
      * @param {number} fileId
      * @param {DataView} pSize64
-     * @returns {number|Promise<number>}
+     * @returns {number}
      */
     xFileSize(fileId: number, pSize64: DataView): number;
     /**
@@ -1227,10 +1227,10 @@ declare module 'wa-sqlite/src/VFS.js' {
     /**
      * Handle asynchronous operation. This implementation will be overriden on
      * registration by an Asyncify build.
-     * @param {function(): Promise<number>} f
+     * @param {function(): number} f
      * @returns {number}
      */
-    handleAsync(f: () => Promise<number>): number;
+    handleAsync(f: () => number): number;
   }
 }
 
@@ -1246,17 +1246,17 @@ declare module 'wa-sqlite/src/examples/IndexedDbVFS.js' {
     mapIdToFile: Map<any, any>;
     cacheSize: number;
     db: any;
-    close(): Promise<void>;
+    close(): void;
     /**
      * Delete a file from IndexedDB.
      * @param {string} name
      */
-    deleteFile(name: string): Promise<void>;
+    deleteFile(name: string): void;
     /**
      * Forcibly clear an orphaned file lock.
      * @param {string} name
      */
-    forceClearLock(name: string): Promise<void>;
+    forceClearLock(name: string): void;
     _getStore(mode?: string): any;
     /**
      * Returns the key for file metadata.
@@ -1271,11 +1271,11 @@ declare module 'wa-sqlite/src/examples/IndexedDbVFS.js' {
      * @returns
      */
     _blockKey(name: string, index: number): string;
-    _getBlock(store: any, file: any, index: any): Promise<any>;
+    _getBlock(store: any, file: any, index: any): any;
     _putBlock(store: any, file: any, index: any, blockData: any): void;
     _purgeCache(store: any, file: any, size?: number): void;
-    _flushCache(store: any, file: any): Promise<void>;
-    _sync(file: any): Promise<void>;
+    _flushCache(store: any, file: any): void;
+    _sync(file: any): void;
     /**
      * Helper function that deletes all keys greater or equal to `key`
      * provided they start with `prefix`.
@@ -1283,7 +1283,7 @@ declare module 'wa-sqlite/src/examples/IndexedDbVFS.js' {
      * @param {string} [prefix]
      * @returns
      */
-    _delete(key: string, prefix?: string): Promise<any>;
+    _delete(key: string, prefix?: string): any;
   }
 }
 
@@ -1326,5 +1326,5 @@ declare module 'wa-sqlite/src/examples/tag.js' {
    * @param {number} db
    * @returns {function(TemplateStringsArray, ...any): Promise<object[]>}
    */
-  export function tag(sqlite3: any, db: number): (arg0: TemplateStringsArray, ...args: any[]) => Promise<object[]>;
+  export function tag(sqlite3: any, db: number): (arg0: TemplateStringsArray, ...args: any[]) => object[];
 }
