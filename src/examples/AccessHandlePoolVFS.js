@@ -467,4 +467,17 @@ export class AccessHandlePoolVFS extends FacadeVFS {
       this.#setAssociatedPath(accessHandle, "", 0)
     }
   }
+
+  /**
+   * Returns the total size in bytes of all currently open SQLite files in the file system.
+   * @returns {number}
+   */
+  getUsedSize() {
+    let totalSize = 0
+    for (const file of this.#mapIdToFile.values()) {
+      const size = file.accessHandle.getSize() - HEADER_OFFSET_DATA
+      totalSize += size
+    }
+    return totalSize
+  }
 }
