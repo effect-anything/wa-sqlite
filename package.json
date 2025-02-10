@@ -1,5 +1,5 @@
 {
-  "name": "@effect/wa-sqlite",
+  "name": "@effect-x/wa-sqlite",
   "publishConfig": {
     "access": "public"
   },
