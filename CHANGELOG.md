@@ -1,4 +1,4 @@
-# @effect/wa-sqlite
+# @effect-x/wa-sqlite
 
 ## 0.1.3
 
