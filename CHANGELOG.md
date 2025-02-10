@@ -1,5 +1,11 @@
 # @effect/wa-sqlite
 
+## 0.1.3
+
+### Patch Changes
+
+- [`ace992e`](https://github.com/Effect-TS/wa-sqlite/commit/ace992e935d31eb26a5191567e748b9e00da7c18) Thanks [@xesrevinu](https://github.com/xesrevinu)! - Sync Uperstream
+
 ## 0.1.2
 
 ### Patch Changes
