@@ -365,6 +365,31 @@ declare interface SQLiteAPI {
     // mFlags: number
   ): Uint8Array
 
+  backup_init(
+    pDest: number,
+    zDestName: string,
+    pSource: number,
+    zSourceName: string,
+  ): number
+
+  backup_step(p: number, nPage: number): number
+  backup_finish(p: number): number
+  backup_remaining(p: number): number
+  backup_pagecount(p: number): number
+
+  /**
+   * Combines the `backup_init`, `backup_step`, and `backup_finish` functions.
+   * destName/sourceName is usually "main" or "temp".
+   *
+   * @returns `SQLITE_OK` (throws exception on error)
+   */
+  backup(
+    pDest: number,
+    zDestName: string,
+    pSource: number,
+    zSourceName: string,
+  ): number
+
   /**
    * Close database connection
    * @see https://www.sqlite.org/c3ref/close.html
@@ -902,10 +927,100 @@ declare interface SQLiteAPI {
    * @returns `SQLITE_OK` (throws exception on error)
    */
   vfs_register(vfs: SQLiteVFS, makeDefault?: boolean): number
+
+  /**
+   * Create a new session object for a database.
+   *
+   * @param db database pointer
+   * @param zDb database name
+   * @returns session pointer
+   */
+  session_create(db: number, zDb: string): number
+
+  /**
+   * Attach a database to a session.
+   *
+   * @param pSession session pointer
+   * @param zTab table name
+   * @returns `SQLITE_OK` (throws exception on error)
+   */
+  session_attach(pSession: number, zTab: string | null): number
+
+  /**
+   * Enable or disable a session.
+   *
+   * @param pSession session pointer
+   * @param enable
+   */
+  session_enable(pSession: number, enable: boolean): void
+
+  /**
+   * Get the changeset for a session.
+   *
+   * @param pSession session pointer
+   * @returns {result: number, size: number, changeset: Uint8Array}
+   */
+  session_changeset(pSession: number): {
+    result: number
+    size: number
+    changeset: Uint8Array | null
+  }
+
+  session_changeset_inverted(pSession: number): {
+    result: number
+    size: number
+    changeset: Uint8Array
+  }
+
+  /**
+   * Delete a session object.
+   *
+   * @param pSession session pointer
+   */
+  session_delete(pSession: number): void
+
+  /**
+   * Start a changeset.
+   *
+   * @param changeset changeset blob to import from
+   * @returns changeset iterator pointer
+   */
+  changeset_start(changesetBlob: Uint8Array): number
+
+  /**
+   * Finalize a changeset iterator.
+   *
+   * @param pIter changeset iterator pointer
+   * @returns `SQLITE_OK` (throws exception on error)
+   */
+  changeset_finalize(pIter: number): number
+
+  /**
+   * Invert a changeset.
+   *
+   * @param input changeset to invert
+   * @returns inverted changeset
+   */
+  changeset_invert(input: Uint8Array): Uint8Array
+
+  /**
+   * Apply a changeset to a database.
+   *
+   * @param db database pointer
+   * @param changeset changeset to apply
+   * @returns `SQLITE_OK` (throws exception on error)
+   */
+  changeset_apply(
+    db: number,
+    changeset: Uint8Array,
+    options?: {
+      onConflict?: (conflictType: number) => 0 | 1 | 2
+    },
+  ): number
 }
 
 /** @ignore */
-declare module "@effect/wa-sqlite/src/sqlite-constants.js" {
+declare module "@effect-x/wa-sqlite/src/sqlite-constants.js" {
   export const SQLITE_OK: 0
   export const SQLITE_ERROR: 1
   export const SQLITE_INTERNAL: 2
@@ -1140,8 +1255,8 @@ declare module "@effect/wa-sqlite/src/sqlite-constants.js" {
   export const SQLITE_PREPARE_NO_VTAB: 0x04
 }
 
-declare module "@effect/wa-sqlite" {
-  export * from "@effect/wa-sqlite/src/sqlite-constants.js"
+declare module "@effect-x/wa-sqlite" {
+  export * from "@effect-x/wa-sqlite/src/sqlite-constants.js"
 
   /**
    * @ignore
@@ -1160,20 +1275,20 @@ declare module "@effect/wa-sqlite" {
 }
 
 /** @ignore */
-declare module "@effect/wa-sqlite/dist/wa-sqlite.mjs" {
+declare module "@effect-x/wa-sqlite/dist/wa-sqlite.mjs" {
   function ModuleFactory(config?: object): Promise<any>
   export = ModuleFactory
 }
 
 /** @ignore */
-declare module "@effect/wa-sqlite/dist/wa-sqlite-async.mjs" {
+declare module "@effect-x/wa-sqlite/dist/wa-sqlite-async.mjs" {
   function ModuleFactory(config?: object): Promise<any>
   export = ModuleFactory
 }
 
 /** @ignore */
-declare module "@effect/wa-sqlite/src/VFS.js" {
-  export * from "@effect/wa-sqlite/src/sqlite-constants.js"
+declare module "@effect-x/wa-sqlite/src/VFS.js" {
+  export * from "@effect-x/wa-sqlite/src/sqlite-constants.js"
 
   export class Base {
     mxPathName: number
@@ -1301,61 +1416,20 @@ declare module "@effect/wa-sqlite/src/VFS.js" {
 }
 
 /** @ignore */
-declare module "@effect/wa-sqlite/src/examples/IndexedDbVFS.js" {
-  import * as VFS from "@effect/wa-sqlite/src/VFS.js"
-  export class IndexedDbVFS extends VFS.Base {
-    /**
-     * @param {string} idbName Name of IndexedDB database.
-     */
-    constructor(idbName?: string)
+declare module "@effect-x/wa-sqlite/src/examples/AccessHandlePoolVFS.js" {
+  import * as VFS from "@effect-x/wa-sqlite/src/VFS.js"
+  /** @ignore */
+  export class AccessHandlePoolVFS extends VFS.Base {
     name: string
+    mapNameToFile: Map<any, any>
     mapIdToFile: Map<any, any>
-    cacheSize: number
-    db: any
-    close(): void
-    /**
-     * Delete a file from IndexedDB.
-     * @param {string} name
-     */
-    deleteFile(name: string): void
-    /**
-     * Forcibly clear an orphaned file lock.
-     * @param {string} name
-     */
-    forceClearLock(name: string): void
-    _getStore(mode?: string): any
-    /**
-     * Returns the key for file metadata.
-     * @param {string} name
-     * @returns
-     */
-    _metaKey(name: string): string
-    /**
-     * Returns the key for file block data.
-     * @param {string} name
-     * @param {number} index
-     * @returns
-     */
-    _blockKey(name: string, index: number): string
-    _getBlock(store: any, file: any, index: any): any
-    _putBlock(store: any, file: any, index: any, blockData: any): void
-    _purgeCache(store: any, file: any, size?: number): void
-    _flushCache(store: any, file: any): void
-    _sync(file: any): void
-    /**
-     * Helper function that deletes all keys greater or equal to `key`
-     * provided they start with `prefix`.
-     * @param {string} key
-     * @param {string} [prefix]
-     * @returns
-     */
-    _delete(key: string, prefix?: string): any
+    getUsedSize(): number
   }
 }
 
 /** @ignore */
-declare module "@effect/wa-sqlite/src/examples/MemoryVFS.js" {
-  import * as VFS from "@effect/wa-sqlite/src/VFS.js"
+declare module "@effect-x/wa-sqlite/src/examples/MemoryVFS.js" {
+  import * as VFS from "@effect-x/wa-sqlite/src/VFS.js"
   /** @ignore */
   export class MemoryVFS extends VFS.Base {
     name: string
@@ -1365,7 +1439,7 @@ declare module "@effect/wa-sqlite/src/examples/MemoryVFS.js" {
 }
 
 /** @ignore */
-declare module "@effect/wa-sqlite/src/examples/tag.js" {
+declare module "@effect-x/wa-sqlite/src/examples/tag.js" {
   /**
    * @ignore
    * Template tag builder. This function creates a tag with an API and

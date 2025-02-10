@@ -416,7 +416,7 @@ export class AccessHandlePoolVFS extends FacadeVFS {
    * We need a synchronous digest function so can't use WebCrypto.
    * Adapted from https://github.com/bryc/code/blob/master/jshash/experimental/cyrb53.js
    * @param {Uint8Array} corpus
-   * @returns {ArrayBuffer} 64-bit digest
+   * @returns {Uint32Array} 64-bit digest
    */
   #computeDigest(corpus) {
     if (!corpus[0]) {
