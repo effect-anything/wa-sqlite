@@ -441,7 +441,7 @@ export class OPFSAdaptiveVFS extends WebLocksMixin(FacadeVFS) {
       this.lastError = e
       return VFS.SQLITE_IOERR
     }
-    return VFS.SQLITE_NOTFOUND
+    return super.jFileControl(fileId, op, pArg)
   }
 
   jGetLastError(zBuf) {
