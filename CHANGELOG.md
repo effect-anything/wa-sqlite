@@ -1,5 +1,11 @@
 # @effect-x/wa-sqlite
 
+## 0.1.5
+
+### Patch Changes
+
+- [`52dbd91`](https://github.com/Effect-TS/wa-sqlite/commit/52dbd91142af9e355013f38d7b1cfbeebf630d73) Thanks [@xesrevinu](https://github.com/xesrevinu)! - dump deps
+
 ## 0.1.4
 
 ### Patch Changes
